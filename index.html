@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Security+ 500問</title>
+<style>
+:root{font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;color:#172033;background:#f5f7fb}
+body{margin:0}.app{max-width:760px;margin:auto;min-height:100vh;background:#fff}.top{position:sticky;top:0;background:#fff;border-bottom:1px solid #ddd;padding:14px 16px;z-index:2}.top h1{font-size:20px;margin:0}.screen{padding:18px}.card{border:1px solid #ddd;border-radius:16px;padding:18px;margin:12px 0}.btn{width:100%;padding:15px;margin:7px 0;border:0;border-radius:12px;background:#4055d6;color:white;font-size:16px;font-weight:700}.btn.alt{background:#eef1ff;color:#26358c}.btn.good{background:#16834b}.btn.bad{background:#b42318}.option{text-align:left;background:white;color:#172033;border:1px solid #ccd2df}.option:disabled{opacity:1}.option.correct{border:2px solid #16834b;background:#effbf4}.option.wrong{border:2px solid #b42318;background:#fff1f0}.muted{color:#68738a;font-size:13px}.explain{background:#f4f7ff;border-radius:12px;padding:14px;margin-top:10px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.stat{font-size:28px;font-weight:800}.small{font-size:12px}.bar{height:10px;background:#e5e8ef;border-radius:10px;overflow:hidden}.bar i{display:block;height:100%;background:#4055d6}.danger{color:#b42318}.hidden{display:none}
+</style></head><body><div class="app"><div class="top"><h1>🛡️ Security+ 500問</h1></div><main id="app" class="screen"></main></div>
+<script>
+let qs=[], mode="home", list=[], idx=0, score=0, answered=false, stats=JSON.parse(localStorage.getItem("secstats")||'{"total":0,"correct":0,"wrong":[],"fav":[]}');
+const domains=["General Security Concepts","Threats, Vulnerabilities, and Mitigations","Security Architecture","Security Operations","Security Program Management and Oversight"];
+const $=x=>document.getElementById(x);
+async function init(){qs=await fetch("questions.json").then(r=>r.json());home()}
+function save(){localStorage.setItem("secstats",JSON.stringify(stats))}
+function home(){
+ const rate=stats.total?Math.round(stats.correct/stats.total*100):0;
+ $("app").innerHTML=`<div class="card"><div class="muted">SY0-701 オリジナル学習問題</div><div class="stat">${rate}%</div><div>${stats.correct} / ${stats.total} 問正解</div><div class="bar"><i style="width:${rate}%"></i></div></div>
+ <button class="btn" onclick="start(10)">ランダム10問</button><button class="btn alt" onclick="start(90)">本番形式90問</button>
+ <button class="btn alt" onclick="domainMenu()">分野別学習</button><button class="btn alt" onclick="wrong()">間違えた問題（${stats.wrong.length}）</button>
+ <button class="btn alt" onclick="favorites()">⭐ お気に入り（${stats.fav.length}）</button>
+ <div class="card small">全500問・4択・解説付き。問題は試験範囲を学習するためのオリジナル問題です。</div>`;
+}
+function domainMenu(){
+ $("app").innerHTML="<h2>分野別学習</h2>"+domains.map(d=>`<button class="btn alt" onclick='startDomain(${JSON.stringify(d)})'>${d}</button>`).join("")+`<button class="btn" onclick="home()">戻る</button>`;
+}
+function startDomain(d){list=qs.filter(q=>q.domain===d).sort(()=>Math.random()-.5).slice(0,50);begin()}
+function start(n){list=[...qs].sort(()=>Math.random()-.5).slice(0,n);begin()}
+function wrong(){list=qs.filter(q=>stats.wrong.includes(q.id)); if(!list.length){alert("まだ間違えた問題はありません");return} begin()}
+function favorites(){list=qs.filter(q=>stats.fav.includes(q.id)); if(!list.length){alert("お気に入りはありません");return} begin()}
+function begin(){idx=0;score=0;answered=false;question()}
+function question(){
+ if(idx>=list.length){result();return}
+ const q=list[idx], fav=stats.fav.includes(q.id);
+ $("app").innerHTML=`<div class="muted">${idx+1} / ${list.length}　${q.domain}</div><h2>${q.question}</h2>
+ ${q.options.map((o,i)=>`<button class="btn option" id="o${i}" onclick="answer(${i})">${String.fromCharCode(65+i)}. ${o}</button>`).join("")}
+ <div id="feedback"></div><button class="btn alt" onclick="toggleFav(${q.id})">${fav?"⭐ お気に入り解除":"☆ お気に入り"}</button>
+ <button class="btn alt" onclick="home()">終了</button>`;
+}
+function answer(i){
+ if(answered)return; answered=true; const q=list[idx],ok=i===q.answer;
+ stats.total++; if(ok){stats.correct++;score++} else if(!stats.wrong.includes(q.id))stats.wrong.push(q.id); save();
+ q.options.forEach((_,j)=>{let b=$("o"+j);b.disabled=true;if(j===q.answer)b.classList.add("correct");if(j===i&&!ok)b.classList.add("wrong")});
+ $("feedback").innerHTML=`<div class="explain"><b>${ok?"✅ 正解！":"❌ 不正解"}</b><br><br>${q.explanation}</div><button class="btn good" onclick="next()">次の問題</button>`;
+}
+function next(){idx++;answered=false;question()}
+function result(){const rate=Math.round(score/list.length*100);$("app").innerHTML=`<div class="card"><h2>結果</h2><div class="stat">${rate}%</div><p>${score} / ${list.length} 問正解</p></div><button class="btn" onclick="start(list.length)">もう一度</button><button class="btn alt" onclick="home()">ホームへ</button>`}
+function toggleFav(id){const p=stats.fav.indexOf(id);if(p>=0)stats.fav.splice(p,1);else stats.fav.push(id);save();question()}
+init();
+</script></body></html>

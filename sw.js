@@ -51,7 +51,7 @@ self.addEventListener('activate', event => {
 self.addEventListener('fetch', event => {
 
   event.respondWith(
-、
+
     fetch(event.request)
 
       .then(response => {
@@ -67,8 +67,6 @@ self.addEventListener('fetch', event => {
         return response;
 
       })
-
-      .c  })
 
       .catch(() => caches.match(event.request))
 

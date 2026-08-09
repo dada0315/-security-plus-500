@@ -542,9 +542,7 @@ function showStats(){
  $("statsBody").innerHTML=`<div class="stat"><span>受験回数</span><b>${s.attempts}</b></div><div class="stat"><span>累計正解率</span><b>${rate}%</b></div><div class="stat"><span>最高正解率</span><b>${s.best||0}%</b></div><div class="stat"><span>模擬試験回数</span><b>${s.mockAttempts||0}</b></div><div class="stat"><span>模擬試験最高</span><b>${s.mockBest||0}%</b></div><div class="stat"><span>間違い保存</span><b>${getWrong().length}問</b></div>`;
  $("history").innerHTML="<h3>📚 最近の成績（最大20件）</h3>"+(h.length?h.map(x=>`<div class="history-row"><span>${x.type}<br><span class="small">${x.date}${x.timeout?"・時間切れ":""}</span></span><b>${x.score}/${x.total}<br>${x.pct}%</b></div>`).join(""):"<p class='small'>まだ成績がありません。</p>");
 }
-if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{});
-</script></body></html>
-function resetData(){
+ function resetData(){
 
   const ok = confirm(
 
@@ -567,3 +565,6 @@ function resetData(){
   showStats();
 
 }
+
+if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{});
+</script></body></html>

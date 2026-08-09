@@ -1,0 +1,8 @@
+{
+  "name": "Security+ 500問トレーニング",
+  "short_name": "Security+500",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f3f4f6",
+  "theme_color": "#111827"
+}

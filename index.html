@@ -1,48 +1,73 @@
 <!doctype html>
-<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Security+ 500問</title>
+<html lang="ja"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111827"><link rel="manifest" href="manifest.json">
+<title>Security+ 500問トレーニング</title>
 <style>
-:root{font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;color:#172033;background:#f5f7fb}
-body{margin:0}.app{max-width:760px;margin:auto;min-height:100vh;background:#fff}.top{position:sticky;top:0;background:#fff;border-bottom:1px solid #ddd;padding:14px 16px;z-index:2}.top h1{font-size:20px;margin:0}.screen{padding:18px}.card{border:1px solid #ddd;border-radius:16px;padding:18px;margin:12px 0}.btn{width:100%;padding:15px;margin:7px 0;border:0;border-radius:12px;background:#4055d6;color:white;font-size:16px;font-weight:700}.btn.alt{background:#eef1ff;color:#26358c}.btn.good{background:#16834b}.btn.bad{background:#b42318}.option{text-align:left;background:white;color:#172033;border:1px solid #ccd2df}.option:disabled{opacity:1}.option.correct{border:2px solid #16834b;background:#effbf4}.option.wrong{border:2px solid #b42318;background:#fff1f0}.muted{color:#68738a;font-size:13px}.explain{background:#f4f7ff;border-radius:12px;padding:14px;margin-top:10px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.stat{font-size:28px;font-weight:800}.small{font-size:12px}.bar{height:10px;background:#e5e8ef;border-radius:10px;overflow:hidden}.bar i{display:block;height:100%;background:#4055d6}.danger{color:#b42318}.hidden{display:none}
-</style></head><body><div class="app"><div class="top"><h1>🛡️ Security+ 500問</h1></div><main id="app" class="screen"></main></div>
+:root{--bg:#f3f4f6;--card:#fff;--text:#111827;--muted:#6b7280;--accent:#2563eb;--line:#e5e7eb}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Noto Sans JP",sans-serif}
+header{background:#111827;color:#fff;padding:18px 16px 14px;position:sticky;top:0;z-index:5}header h1{font-size:20px;margin:0 0 4px}header p{margin:0;font-size:12px;color:#cbd5e1}
+main{max-width:720px;margin:auto;padding:16px 14px 90px}.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;margin-bottom:14px;box-shadow:0 2px 8px #0000000a}
+h2{font-size:20px;margin:0 0 14px}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+button,select{font:inherit;border-radius:12px;border:1px solid #cbd5e1;background:#fff;padding:13px 12px;cursor:pointer}
+button.primary{background:var(--accent);color:#fff;border-color:var(--accent)}button:disabled{opacity:.55}
+.small{font-size:12px;color:var(--muted)}.stat{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line)}
+select{width:100%;margin:6px 0 12px}.progress{height:8px;background:#e5e7eb;border-radius:999px;overflow:hidden;margin:10px 0}.bar{height:100%;background:var(--accent);width:0}
+.question{font-size:19px;font-weight:700;line-height:1.55}.option{width:100%;text-align:left;margin:7px 0;white-space:normal}.option.correct{border-color:#16a34a;background:#f0fdf4}.option.wrong{border-color:#dc2626;background:#fef2f2}
+.explain{border-left:4px solid var(--accent);background:#eff6ff;padding:12px;border-radius:10px;line-height:1.55;margin-top:12px}.badge{display:inline-block;padding:4px 8px;border-radius:999px;background:#eef2ff;color:#3730a3;font-size:11px;margin-right:5px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.hide{display:none}
+footer{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);padding:8px;z-index:6}footer .inner{width:min(720px,100%);margin:auto;display:flex;gap:8px}footer button{flex:1;padding:10px}
+@media(max-width:480px){.grid{grid-template-columns:1fr}.question{font-size:18px}}
+</style></head>
+<body>
+<header><h1>🔐 Security+ 500問トレーニング</h1><p>オリジナル練習問題／非公式・学習用</p></header>
+<main>
+<section id="home" class="card">
+<h2>学習メニュー</h2>
+<div class="stat"><span>総問題数</span><b>500問</b></div>
+<div class="stat"><span>最高正解率</span><b id="best">0%</b></div>
+<div class="stat"><span>間違い保存</span><b id="wrongCount">0問</b></div>
+<label class="small">分野</label>
+<select id="domain"><option value="all">全分野（500問）</option>
+<option>一般セキュリティ概念</option><option>脅威・脆弱性・緩和策</option><option>セキュリティアーキテクチャ</option><option>セキュリティ運用</option><option>セキュリティプログラム管理</option></select>
+<label class="small">出題数</label>
+<select id="count"><option>10</option><option>25</option><option>50</option><option>100</option><option>500</option></select>
+<div class="grid">
+<button class="primary" onclick="startQuiz(false)">🚀 スタート</button><button onclick="startQuiz(true)">🔀 ランダム</button>
+<button onclick="startWrong()">❌ 間違い復習</button><button onclick="showStats()">📊 成績</button>
+</div></section>
+
+<section id="quiz" class="card hide">
+<div class="row"><span id="qno"></span><span id="qdomain" class="badge"></span><span id="qdifficulty" class="badge"></span></div>
+<div class="progress"><div id="bar" class="bar"></div></div><div id="qtext" class="question"></div><div id="options"></div>
+<div id="explain" class="explain hide"></div><div class="row" style="margin-top:12px">
+<button id="next" class="primary" onclick="nextQuestion()" disabled>次の問題 ▶</button><button onclick="goHome()">メニュー</button></div>
+</section>
+
+<section id="result" class="card hide"><h2>🎉 結果</h2><div id="resultText"></div>
+<div class="grid"><button class="primary" onclick="restart()">もう一度</button><button onclick="goHome()">メニューへ</button></div></section>
+
+<section id="stats" class="card hide"><h2>📊 成績</h2><div id="statsBody"></div><button onclick="goHome()">戻る</button></section>
+</main>
+<footer><div class="inner"><button onclick="goHome()">🏠 メニュー</button><button onclick="startWrong()">❌ 間違い復習</button></div></footer>
 <script>
-let qs=[], mode="home", list=[], idx=0, score=0, answered=false, stats=JSON.parse(localStorage.getItem("secstats")||'{"total":0,"correct":0,"wrong":[],"fav":[]}');
-const domains=["General Security Concepts","Threats, Vulnerabilities, and Mitigations","Security Architecture","Security Operations","Security Program Management and Oversight"];
-const $=x=>document.getElementById(x);
-async function init(){qs=await fetch("questions.json").then(r=>r.json());home()}
-function save(){localStorage.setItem("secstats",JSON.stringify(stats))}
-function home(){
- const rate=stats.total?Math.round(stats.correct/stats.total*100):0;
- $("app").innerHTML=`<div class="card"><div class="muted">SY0-701 オリジナル学習問題</div><div class="stat">${rate}%</div><div>${stats.correct} / ${stats.total} 問正解</div><div class="bar"><i style="width:${rate}%"></i></div></div>
- <button class="btn" onclick="start(10)">ランダム10問</button><button class="btn alt" onclick="start(90)">本番形式90問</button>
- <button class="btn alt" onclick="domainMenu()">分野別学習</button><button class="btn alt" onclick="wrong()">間違えた問題（${stats.wrong.length}）</button>
- <button class="btn alt" onclick="favorites()">⭐ お気に入り（${stats.fav.length}）</button>
- <div class="card small">全500問・4択・解説付き。問題は試験範囲を学習するためのオリジナル問題です。</div>`;
-}
-function domainMenu(){
- $("app").innerHTML="<h2>分野別学習</h2>"+domains.map(d=>`<button class="btn alt" onclick='startDomain(${JSON.stringify(d)})'>${d}</button>`).join("")+`<button class="btn" onclick="home()">戻る</button>`;
-}
-function startDomain(d){list=qs.filter(q=>q.domain===d).sort(()=>Math.random()-.5).slice(0,50);begin()}
-function start(n){list=[...qs].sort(()=>Math.random()-.5).slice(0,n);begin()}
-function wrong(){list=qs.filter(q=>stats.wrong.includes(q.id)); if(!list.length){alert("まだ間違えた問題はありません");return} begin()}
-function favorites(){list=qs.filter(q=>stats.fav.includes(q.id)); if(!list.length){alert("お気に入りはありません");return} begin()}
-function begin(){idx=0;score=0;answered=false;question()}
-function question(){
- if(idx>=list.length){result();return}
- const q=list[idx], fav=stats.fav.includes(q.id);
- $("app").innerHTML=`<div class="muted">${idx+1} / ${list.length}　${q.domain}</div><h2>${q.question}</h2>
- ${q.options.map((o,i)=>`<button class="btn option" id="o${i}" onclick="answer(${i})">${String.fromCharCode(65+i)}. ${o}</button>`).join("")}
- <div id="feedback"></div><button class="btn alt" onclick="toggleFav(${q.id})">${fav?"⭐ お気に入り解除":"☆ お気に入り"}</button>
- <button class="btn alt" onclick="home()">終了</button>`;
-}
-function answer(i){
- if(answered)return; answered=true; const q=list[idx],ok=i===q.answer;
- stats.total++; if(ok){stats.correct++;score++} else if(!stats.wrong.includes(q.id))stats.wrong.push(q.id); save();
- q.options.forEach((_,j)=>{let b=$("o"+j);b.disabled=true;if(j===q.answer)b.classList.add("correct");if(j===i&&!ok)b.classList.add("wrong")});
- $("feedback").innerHTML=`<div class="explain"><b>${ok?"✅ 正解！":"❌ 不正解"}</b><br><br>${q.explanation}</div><button class="btn good" onclick="next()">次の問題</button>`;
-}
-function next(){idx++;answered=false;question()}
-function result(){const rate=Math.round(score/list.length*100);$("app").innerHTML=`<div class="card"><h2>結果</h2><div class="stat">${rate}%</div><p>${score} / ${list.length} 問正解</p></div><button class="btn" onclick="start(list.length)">もう一度</button><button class="btn alt" onclick="home()">ホームへ</button>`}
-function toggleFav(id){const p=stats.fav.indexOf(id);if(p>=0)stats.fav.splice(p,1);else stats.fav.push(id);save();question()}
-init();
+let bank=[],session=[],idx=0,score=0,answered=false,lastSession=[];
+const $=id=>document.getElementById(id);
+const getWrong=()=>JSON.parse(localStorage.getItem("secplus_wrong")||"[]");
+const saveWrong=a=>localStorage.setItem("secplus_wrong",JSON.stringify([...new Set(a)]));
+const getStats=()=>JSON.parse(localStorage.getItem("secplus_stats")||'{"attempts":0,"correct":0,"total":0,"best":0}');
+fetch("questions.json").then(r=>r.json()).then(d=>{bank=d;refreshHome()}).catch(()=>alert("問題データを読み込めません。GitHub Pages公開直後なら再読み込みしてください。"));
+function refreshHome(){const s=getStats();$("best").textContent=(s.best||0)+"%";$("wrongCount").textContent=getWrong().length+"問"}
+function hideAll(){["home","quiz","result","stats"].forEach(x=>$(x).classList.add("hide"))}
+function goHome(){hideAll();$("home").classList.remove("hide");refreshHome()}
+function pick(n,d){let a=bank.filter(q=>d==="all"||q.domain===d);a.sort(()=>Math.random()-.5);return a.slice(0,Math.min(n,a.length))}
+function startQuiz(){const n=+$("count").value,d=$("domain").value;session=pick(n,d);idx=0;score=0;lastSession=session;hideAll();$("quiz").classList.remove("hide");render()}
+function startWrong(){const ids=getWrong(),n=+$("count").value;session=bank.filter(q=>ids.includes(q.id)).sort(()=>Math.random()-.5).slice(0,n);if(!session.length){alert("間違い問題はまだありません。まず問題を解いてみよう！");return}idx=0;score=0;lastSession=session;hideAll();$("quiz").classList.remove("hide");render()}
+function render(){answered=false;$("next").disabled=true;$("explain").classList.add("hide");const q=session[idx];$("qno").textContent=`${idx+1} / ${session.length}`;$("qdomain").textContent=q.domain;$("qdifficulty").textContent=q.difficulty;$("bar").style.width=(idx/session.length*100)+"%";$("qtext").textContent=q.question;const w=$("options");w.innerHTML="";q.options.forEach((o,i)=>{const b=document.createElement("button");b.className="option";b.textContent=`${String.fromCharCode(65+i)}. ${o}`;b.onclick=()=>answer(i);w.appendChild(b)})}
+function answer(choice){if(answered)return;answered=true;const q=session[idx],bs=[...$("options").children];bs.forEach((b,i)=>{b.disabled=true;if(i===q.answer)b.classList.add("correct");if(i===choice&&choice!==q.answer)b.classList.add("wrong")});if(choice===q.answer)score++;else saveWrong([...getWrong(),q.id]);$("explain").textContent=(choice===q.answer?"⭕ 正解！ ":"❌ 不正解。 ")+q.explanation;$("explain").classList.remove("hide");$("next").disabled=false;$("next").textContent=idx===session.length-1?"結果を見る ▶":"次の問題 ▶"}
+function nextQuestion(){if(!answered)return;if(idx<session.length-1){idx++;render()}else finish()}
+function finish(){const pct=Math.round(score/session.length*100),s=getStats();s.attempts++;s.correct+=score;s.total+=session.length;s.best=Math.max(s.best||0,pct);localStorage.setItem("secplus_stats",JSON.stringify(s));hideAll();$("result").classList.remove("hide");$("resultText").innerHTML=`<div class="stat"><span>正解</span><b>${score} / ${session.length}</b></div><div class="stat"><span>正解率</span><b>${pct}%</b></div><p>${pct>=80?"🔥 かなり良い！":"💪 間違い復習でもう一周しよう！"}</p>`;refreshHome()}
+function restart(){startQuiz()}
+function showStats(){const s=getStats();hideAll();$("stats").classList.remove("hide");const rate=s.total?Math.round(s.correct/s.total*100):0;$("statsBody").innerHTML=`<div class="stat"><span>受験回数</span><b>${s.attempts}</b></div><div class="stat"><span>累計正解率</span><b>${rate}%</b></div><div class="stat"><span>最高正解率</span><b>${s.best||0}%</b></div><div class="stat"><span>間違い保存</span><b>${getWrong().length}問</b></div>`}
+if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script></body></html>

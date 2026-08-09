@@ -544,3 +544,26 @@ function showStats(){
 }
 if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script></body></html>
+function resetData(){
+
+  const ok = confirm(
+
+    "成績・間違い問題・成績履歴をすべてリセットします。\n\n本当にリセットしますか？"
+
+  );
+
+  if(!ok)return;
+
+  localStorage.removeItem("secplus_stats");
+
+  localStorage.removeItem("secplus_wrong");
+
+  localStorage.removeItem("secplus_history");
+
+  alert("✅ 成績と間違い問題をリセットしました。");
+
+  refreshHome();
+
+  showStats();
+
+}

@@ -15,7 +15,7 @@ button.primary{background:var(--accent);color:#fff;border-color:var(--accent)}bu
 select{width:100%;margin:6px 0 12px}.progress{height:8px;background:#e5e7eb;border-radius:999px;overflow:hidden;margin:10px 0}.bar{height:100%;background:var(--accent);width:0}
 .question{font-size:19px;font-weight:700;line-height:1.55}.option{width:100%;text-align:left;margin:7px 0;white-space:normal}.option.correct{border-color:#16a34a;background:#f0fdf4}.option.wrong{border-color:#dc2626;background:#fef2f2}
 .explain{border-left:4px solid var(--accent);background:#eff6ff;padding:12px;border-radius:10px;line-height:1.55;margin-top:12px}.badge{display:inline-block;padding:4px 8px;border-radius:999px;background:#eef2ff;color:#3730a3;font-size:11px;margin-right:5px}
-.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.hide{display:none}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.hide{display:none}.timer{font-weight:800;font-size:18px;color:#b91c1c}.timer.ok{color:#111827}.review-item{border:1px solid var(--line);border-radius:14px;padding:12px;margin:10px 0}.review-q{font-weight:700;line-height:1.5}.review-ok{color:#15803d;font-weight:700}.review-ng{color:#b91c1c;font-weight:700}.history{margin-top:12px}.history-row{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
 footer{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);padding:8px;z-index:6}footer .inner{width:min(720px,100%);margin:auto;display:flex;gap:8px}footer button{flex:1;padding:10px}
 @media(max-width:480px){.grid{grid-template-columns:1fr}.question{font-size:18px}}
 </style></head>
@@ -34,11 +34,11 @@ footer{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px sol
 <select id="count"><option>10</option><option>25</option><option>50</option><option>100</option><option>500</option></select>
 <div class="grid">
 <button class="primary" onclick="startQuiz(false)">🚀 スタート</button><button onclick="startQuiz(true)">🔀 ランダム</button>
-<button onclick="startWrong()">❌ 間違い復習</button><button onclick="showStats()">📊 成績</button>
+<button onclick="startWrong()">❌ 間違い復習</button><button class="primary" onclick="startMock()">📝 模擬試験</button><button onclick="showStats()">📊 成績</button>
 </div></section>
 
 <section id="quiz" class="card hide">
-<div class="row"><span id="qno"></span><span id="qdomain" class="badge"></span><span id="qdifficulty" class="badge"></span></div>
+<div class="row"><span id="qno"></span><span id="qdomain" class="badge"></span><span id="qdifficulty" class="badge"></span><span id="modeBadge" class="badge hide">模擬試験</span><span id="timer" class="timer hide">90:00</span></div>
 <div class="progress"><div id="bar" class="bar"></div></div><div id="qtext" class="question"></div><div id="options"></div>
 <div id="explain" class="explain hide"></div><div class="row" style="margin-top:12px">
 <button id="next" class="primary" onclick="nextQuestion()" disabled>次の問題 ▶</button><button onclick="goHome()">メニュー</button></div>
@@ -47,27 +47,142 @@ footer{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px sol
 <section id="result" class="card hide"><h2>🎉 結果</h2><div id="resultText"></div>
 <div class="grid"><button class="primary" onclick="restart()">もう一度</button><button onclick="goHome()">メニューへ</button></div></section>
 
-<section id="stats" class="card hide"><h2>📊 成績</h2><div id="statsBody"></div><button onclick="goHome()">戻る</button></section>
+<section id="stats" class="card hide"><h2>📊 成績</h2><div id="statsBody"></div><div id="history" class="history"></div><button onclick="goHome()">戻る</button></section>
+
+<section id="review" class="card hide"><h2>📖 模擬試験の解説</h2><div id="reviewBody"></div><button onclick="goHome()">メニューへ</button></section>
 </main>
 <footer><div class="inner"><button onclick="goHome()">🏠 メニュー</button><button onclick="startWrong()">❌ 間違い復習</button></div></footer>
 <script>
-let bank=[],session=[],idx=0,score=0,answered=false,lastSession=[];
+let bank=[],session=[],idx=0,score=0,answered=false,lastSession=[],mode="training",answers=[],timerId=null,timeLeft=0;
 const $=id=>document.getElementById(id);
 const getWrong=()=>JSON.parse(localStorage.getItem("secplus_wrong")||"[]");
 const saveWrong=a=>localStorage.setItem("secplus_wrong",JSON.stringify([...new Set(a)]));
-const getStats=()=>JSON.parse(localStorage.getItem("secplus_stats")||'{"attempts":0,"correct":0,"total":0,"best":0}');
+const getStats=()=>JSON.parse(localStorage.getItem("secplus_stats")||'{"attempts":0,"correct":0,"total":0,"best":0,"mockAttempts":0,"mockBest":0}');
+const getHistory=()=>JSON.parse(localStorage.getItem("secplus_history")||"[]");
+const saveHistory=h=>localStorage.setItem("secplus_history",JSON.stringify(h.slice(-20)));
 fetch("questions.json").then(r=>r.json()).then(d=>{bank=d;refreshHome()}).catch(()=>alert("問題データを読み込めません。GitHub Pages公開直後なら再読み込みしてください。"));
-function refreshHome(){const s=getStats();$("best").textContent=(s.best||0)+"%";$("wrongCount").textContent=getWrong().length+"問"}
-function hideAll(){["home","quiz","result","stats"].forEach(x=>$(x).classList.add("hide"))}
-function goHome(){hideAll();$("home").classList.remove("hide");refreshHome()}
+
+function refreshHome(){
+ const s=getStats();
+ $("best").textContent=(s.best||0)+"%";
+ $("wrongCount").textContent=getWrong().length+"問";
+}
+function hideAll(){["home","quiz","result","stats","review"].forEach(x=>$(x).classList.add("hide"))}
+function goHome(){stopTimer();hideAll();$("home").classList.remove("hide");refreshHome()}
 function pick(n,d){let a=bank.filter(q=>d==="all"||q.domain===d);a.sort(()=>Math.random()-.5);return a.slice(0,Math.min(n,a.length))}
-function startQuiz(){const n=+$("count").value,d=$("domain").value;session=pick(n,d);idx=0;score=0;lastSession=session;hideAll();$("quiz").classList.remove("hide");render()}
-function startWrong(){const ids=getWrong(),n=+$("count").value;session=bank.filter(q=>ids.includes(q.id)).sort(()=>Math.random()-.5).slice(0,n);if(!session.length){alert("間違い問題はまだありません。まず問題を解いてみよう！");return}idx=0;score=0;lastSession=session;hideAll();$("quiz").classList.remove("hide");render()}
-function render(){answered=false;$("next").disabled=true;$("explain").classList.add("hide");const q=session[idx];$("qno").textContent=`${idx+1} / ${session.length}`;$("qdomain").textContent=q.domain;$("qdifficulty").textContent=q.difficulty;$("bar").style.width=(idx/session.length*100)+"%";$("qtext").textContent=q.question;const w=$("options");w.innerHTML="";q.options.forEach((o,i)=>{const b=document.createElement("button");b.className="option";b.textContent=`${String.fromCharCode(65+i)}. ${o}`;b.onclick=()=>answer(i);w.appendChild(b)})}
-function answer(choice){if(answered)return;answered=true;const q=session[idx],bs=[...$("options").children];bs.forEach((b,i)=>{b.disabled=true;if(i===q.answer)b.classList.add("correct");if(i===choice&&choice!==q.answer)b.classList.add("wrong")});if(choice===q.answer)score++;else saveWrong([...getWrong(),q.id]);$("explain").textContent=(choice===q.answer?"⭕ 正解！ ":"❌ 不正解。 ")+q.explanation;$("explain").classList.remove("hide");$("next").disabled=false;$("next").textContent=idx===session.length-1?"結果を見る ▶":"次の問題 ▶"}
-function nextQuestion(){if(!answered)return;if(idx<session.length-1){idx++;render()}else finish()}
-function finish(){const pct=Math.round(score/session.length*100),s=getStats();s.attempts++;s.correct+=score;s.total+=session.length;s.best=Math.max(s.best||0,pct);localStorage.setItem("secplus_stats",JSON.stringify(s));hideAll();$("result").classList.remove("hide");$("resultText").innerHTML=`<div class="stat"><span>正解</span><b>${score} / ${session.length}</b></div><div class="stat"><span>正解率</span><b>${pct}%</b></div><p>${pct>=80?"🔥 かなり良い！":"💪 間違い復習でもう一周しよう！"}</p>`;refreshHome()}
-function restart(){startQuiz()}
-function showStats(){const s=getStats();hideAll();$("stats").classList.remove("hide");const rate=s.total?Math.round(s.correct/s.total*100):0;$("statsBody").innerHTML=`<div class="stat"><span>受験回数</span><b>${s.attempts}</b></div><div class="stat"><span>累計正解率</span><b>${rate}%</b></div><div class="stat"><span>最高正解率</span><b>${s.best||0}%</b></div><div class="stat"><span>間違い保存</span><b>${getWrong().length}問</b></div>`}
+
+function startQuiz(random=false){
+ stopTimer(); mode="training";
+ const n=+$("count").value,d=$("domain").value;
+ session=pick(n,d); idx=0; score=0; answers=[]; lastSession=session;
+ if(!session.length){alert("問題データがまだ読み込まれていません。");return}
+ hideAll();$("quiz").classList.remove("hide");$("modeBadge").classList.add("hide");$("timer").classList.add("hide");render();
+}
+function startWrong(){
+ stopTimer(); mode="training";
+ const ids=getWrong(),n=+$("count").value;
+ session=bank.filter(q=>ids.includes(q.id)).sort(()=>Math.random()-.5).slice(0,n);
+ if(!session.length){alert("間違い問題はまだありません。まず問題を解いてみよう！");return}
+ idx=0;score=0;answers=[];lastSession=session;hideAll();$("quiz").classList.remove("hide");$("modeBadge").classList.add("hide");$("timer").classList.add("hide");render();
+}
+function startMock(){
+ if(bank.length<90){alert("問題データを読み込んでから模擬試験を開始してください。");return}
+ stopTimer(); mode="mock";
+ session=pick(90,"all"); idx=0; score=0; answers=new Array(session.length).fill(null); lastSession=session;
+ hideAll();$("quiz").classList.remove("hide");
+ $("modeBadge").classList.remove("hide");$("timer").classList.remove("hide");
+ startTimer(90*60); render();
+}
+
+function startTimer(seconds){
+ timeLeft=seconds; updateTimer();
+ timerId=setInterval(()=>{timeLeft--;updateTimer();if(timeLeft<=0){stopTimer();finishMock(true)}},1000);
+}
+function stopTimer(){if(timerId){clearInterval(timerId);timerId=null}}
+function updateTimer(){
+ const m=Math.floor(Math.max(0,timeLeft)/60),s=Math.max(0,timeLeft)%60;
+ $("timer").textContent=`残り ${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`;
+ $("timer").classList.toggle("ok",timeLeft>600);
+}
+
+function render(){
+ answered=false;$("next").disabled=(mode==="training");$("explain").classList.add("hide");
+ const q=session[idx];
+ $("qno").textContent=`${idx+1} / ${session.length}`;
+ $("qdomain").textContent=q.domain;$("qdifficulty").textContent=q.difficulty;
+ $("bar").style.width=((idx+1)/session.length*100)+"%";$("qtext").textContent=q.question;
+ const w=$("options");w.innerHTML="";
+ q.options.forEach((o,i)=>{
+   const b=document.createElement("button");b.className="option";
+   b.textContent=`${String.fromCharCode(65+i)}. ${o}`;
+   if(mode==="mock" && answers[idx]===i){b.classList.add("selected");b.style.borderColor="var(--accent)";b.style.background="#eff6ff"}
+   b.onclick=()=>answer(i);w.appendChild(b);
+ });
+ if(mode==="mock"){
+   $("next").disabled=false;
+   $("next").textContent=idx===session.length-1?"模擬試験を終了 ▶":"次の問題 ▶";
+ }else{
+   $("next").textContent=idx===session.length-1?"結果を見る ▶":"次の問題 ▶";
+ }
+}
+function answer(choice){
+ const q=session[idx];
+ if(mode==="mock"){
+   answers[idx]=choice;answered=true;
+   [...$("options").children].forEach((b,i)=>{b.disabled=false;b.classList.remove("selected");b.style.borderColor="";b.style.background=""});
+   const b=$("options").children[choice];b.classList.add("selected");b.style.borderColor="var(--accent)";b.style.background="#eff6ff";
+   return;
+ }
+ if(answered)return;
+ answered=true;
+ const bs=[...$("options").children];
+ bs.forEach((b,i)=>{b.disabled=true;if(i===q.answer)b.classList.add("correct");if(i===choice&&choice!==q.answer)b.classList.add("wrong")});
+ if(choice===q.answer)score++;else saveWrong([...getWrong(),q.id]);
+ $("explain").textContent=(choice===q.answer?"⭕ 正解！ ":"❌ 不正解。 ")+q.explanation;
+ $("explain").classList.remove("hide");$("next").disabled=false;
+ $("next").textContent=idx===session.length-1?"結果を見る ▶":"次の問題 ▶";
+}
+function nextQuestion(){
+ if(mode==="mock"){if(idx<session.length-1){idx++;render()}else finishMock(false);return}
+ if(!answered)return;
+ if(idx<session.length-1){idx++;render()}else finishTraining()
+}
+function finishTraining(){
+ const pct=Math.round(score/session.length*100),s=getStats();
+ s.attempts++;s.correct+=score;s.total+=session.length;s.best=Math.max(s.best||0,pct);
+ localStorage.setItem("secplus_stats",JSON.stringify(s));
+ saveHistory([...getHistory(),{type:"練習",date:new Date().toLocaleString("ja-JP"),score,total:session.length,pct}]);
+ hideAll();$("result").classList.remove("hide");
+ $("resultText").innerHTML=`<div class="stat"><span>正解</span><b>${score} / ${session.length}</b></div><div class="stat"><span>正解率</span><b>${pct}%</b></div><p>${pct>=80?"🔥 かなり良い！":"💪 間違い復習でもう一周しよう！"}</p>`;
+ refreshHome();
+}
+function finishMock(timeout){
+ stopTimer();
+ score=answers.reduce((n,a,i)=>n+(a===session[i].answer?1:0),0);
+ const pct=Math.round(score/session.length*100),s=getStats();
+ s.mockAttempts=(s.mockAttempts||0)+1;s.mockBest=Math.max(s.mockBest||0,pct);
+ s.attempts++;s.correct+=score;s.total+=session.length;s.best=Math.max(s.best||0,pct);
+ localStorage.setItem("secplus_stats",JSON.stringify(s));
+ saveHistory([...getHistory(),{type:"模擬試験",date:new Date().toLocaleString("ja-JP"),score,total:session.length,pct,timeout:!!timeout}]);
+ hideAll();$("result").classList.remove("hide");
+ $("resultText").innerHTML=`<div class="stat"><span>模擬試験</span><b>${timeout?"⏰ 時間切れ":"完了"}</b></div><div class="stat"><span>正解</span><b>${score} / ${session.length}</b></div><div class="stat"><span>正解率</span><b>${pct}%</b></div><p>${pct>=80?"🔥 合格圏を狙える出来！":"💪 解説を確認して、もう一度挑戦しよう！"}</p><button class="primary" onclick="showReview()">📖 全問題の解説を見る</button>`;
+ refreshHome();
+}
+function restart(){mode==="mock"?startMock():startQuiz(false)}
+function showReview(){
+ hideAll();$("review").classList.remove("hide");
+ let html="";
+ session.forEach((q,i)=>{
+   const a=answers[i],ok=a===q.answer;
+   html+=`<div class="review-item"><div class="review-q">${i+1}. ${q.question}</div><div class="${ok?"review-ok":"review-ng"}">${a===null?"未回答":(ok?"⭕ 正解":"❌ 不正解")}</div><div class="small">正解：${String.fromCharCode(65+q.answer)}. ${q.options[q.answer]}</div><div class="explain">${q.explanation}</div></div>`;
+ });
+ $("reviewBody").innerHTML=html;
+}
+function showStats(){
+ const s=getStats(),h=getHistory().slice().reverse(),rate=s.total?Math.round(s.correct/s.total*100):0;
+ hideAll();$("stats").classList.remove("hide");
+ $("statsBody").innerHTML=`<div class="stat"><span>受験回数</span><b>${s.attempts}</b></div><div class="stat"><span>累計正解率</span><b>${rate}%</b></div><div class="stat"><span>最高正解率</span><b>${s.best||0}%</b></div><div class="stat"><span>模擬試験回数</span><b>${s.mockAttempts||0}</b></div><div class="stat"><span>模擬試験最高</span><b>${s.mockBest||0}%</b></div><div class="stat"><span>間違い保存</span><b>${getWrong().length}問</b></div>`;
+ $("history").innerHTML="<h3>📚 最近の成績（最大20件）</h3>"+(h.length?h.map(x=>`<div class="history-row"><span>${x.type}<br><span class="small">${x.date}${x.timeout?"・時間切れ":""}</span></span><b>${x.score}/${x.total}<br>${x.pct}%</b></div>`).join(""):"<p class='small'>まだ成績がありません。</p>");
+}
 if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script></body></html>

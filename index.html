@@ -18,6 +18,199 @@ select{width:100%;margin:6px 0 12px}.progress{height:8px;background:#e5e7eb;bord
 .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.hide{display:none}.timer{font-weight:800;font-size:18px;color:#b91c1c}.timer.ok{color:#111827}.review-item{border:1px solid var(--line);border-radius:14px;padding:12px;margin:10px 0}.review-q{font-weight:700;line-height:1.5}.review-ok{color:#15803d;font-weight:700}.review-ng{color:#b91c1c;font-weight:700}.history{margin-top:12px}.history-row{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
 footer{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);padding:8px;z-index:6}footer .inner{width:min(720px,100%);margin:auto;display:flex;gap:8px}footer button{flex:1;padding:10px}
 @media(max-width:480px){.grid{grid-template-columns:1fr}.question{font-size:18px}}
+ html,body{
+
+  width:100%;
+
+  max-width:100%;
+
+  overflow-x:hidden;
+
+  -webkit-text-size-adjust:100%;
+
+  -webkit-tap-highlight-color:transparent;
+
+  touch-action:manipulation;
+
+}
+
+body{
+
+  padding-bottom:env(safe-area-inset-bottom);
+
+}
+
+/* ヘッダー */
+
+header{
+
+  padding-top:calc(14px + env(safe-area-inset-top));
+
+  box-shadow:0 2px 10px #00000022;
+
+}
+
+header h1{
+
+  font-size:19px;
+
+  line-height:1.35;
+
+}
+
+/* カード */
+
+.card{
+
+  border-radius:20px;
+
+  box-shadow:0 3px 14px #00000012;
+
+}
+
+/* ボタンを大きく */
+
+button{
+
+  min-height:52px;
+
+  padding:12px 14px;
+
+  font-weight:600;
+
+  -webkit-appearance:none;
+
+}
+
+button:active{
+
+  transform:scale(.98);
+
+}
+
+/* 問題文 */
+
+.question{
+
+  font-size:20px;
+
+  line-height:1.65;
+
+  margin:14px 0;
+
+}
+
+/* 選択肢を大きくして押しやすく */
+
+.option{
+
+  min-height:64px;
+
+  padding:14px 15px;
+
+  margin:8px 0;
+
+  font-size:17px;
+
+  line-height:1.45;
+
+  border:2px solid #cbd5e1;
+
+  border-radius:16px;
+
+}
+
+/* 解説 */
+
+.explain{
+
+  padding:14px;
+
+  font-size:16px;
+
+  line-height:1.7;
+
+  border-radius:12px;
+
+}
+
+/* 次の問題ボタン */
+
+#next{
+
+  min-height:58px;
+
+  font-size:17px;
+
+}
+
+/* 下部メニュー */
+
+footer{
+
+  background:#ffffffee;
+
+  backdrop-filter:blur(12px);
+
+  padding:7px 8px calc(7px + env(safe-area-inset-bottom));
+
+  box-shadow:0 -2px 12px #00000012;
+
+}
+
+footer button{
+
+  min-height:48px;
+
+  font-size:14px;
+
+}
+
+/* 小さいスマホ */
+
+@media(max-width:380px){
+
+  main{
+
+    padding-left:10px;
+
+    padding-right:10px;
+
+  }
+
+  .card{
+
+    padding:14px;
+
+  }
+
+  .question{
+
+    font-size:18px;
+
+  }
+
+  .option{
+
+    min-height:60px;
+
+    font-size:16px;
+
+  }
+
+}
+
+/* タブレット・Android大画面 */
+
+@media(min-width:600px){
+
+  .option{
+
+    min-height:58px;
+
+  }
+
+}
 </style></head>
 <body>
 <header><h1>🔐 Security+ 500問トレーニング</h1><p>オリジナル練習問題／非公式・学習用</p></header>

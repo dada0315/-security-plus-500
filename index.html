@@ -345,16 +345,8 @@ function answer(choice){
   // 間違えた問題は「間違い復習」に保存
 
   saveWrong([...getWrong(),q.id]);
-
 }
-
-$("explain").textContent=(choice===q.answer?"⭕ 正解！ ":"❌ 不正解。 ")+q.explanation;
-
-$("explain").classList.remove("hide");
-
-$("next").disabled=false;
-
-$("next").textContent=idx===session.length-1?"結果を見る ▶":"次の問題 ▶";
+ $("next").textContent=idx===session.length-1?"結果を見る ▶":"次の問題 ▶";
  $("explain").textContent=(choice===q.answer?"⭕ 正解！ ":"❌ 不正解。 ")+q.explanation;
  $("explain").classList.remove("hide");$("next").disabled=false;
  $("next").textContent=idx===session.length-1?"結果を見る ▶":"次の問題 ▶";

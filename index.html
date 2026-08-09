@@ -357,14 +357,142 @@ function nextQuestion(){
  if(idx<session.length-1){idx++;render()}else finishTraining()
 }
 function finishTraining(){
- const pct=Math.round(score/session.length*100),s=getStats();
- s.attempts++;s.correct+=score;s.total+=session.length;s.best=Math.max(s.best||0,pct);
- localStorage.setItem("secplus_stats",JSON.stringify(s));
- saveHistory([...getHistory(),{type:"練習",date:new Date().toLocaleString("ja-JP"),score,total:session.length,pct}]);
- hideAll();$("result").classList.remove("hide");
- $("resultText").innerHTML=`<div class="stat"><span>正解</span><b>${score} / ${session.length}</b></div><div class="stat"><span>正解率</span><b>${pct}%</b></div><p>${pct>=80?"🔥 かなり良い！":"💪 間違い復習でもう一周しよう！"}</p>`;
- refreshHome();
+
+  const pct = Math.round(score / session.length * 100);
+
+  const s = getStats();
+
+  // 成績を保存
+
+  s.attempts++;
+
+  s.correct += score;
+
+  s.total += session.length;
+
+  s.best = Math.max(s.best || 0, pct);
+
+  localStorage.setItem("secplus_stats", JSON.stringify(s));
+
+  // 成績履歴を保存
+
+  saveHistory([
+
+    ...getHistory(),
+
+    {
+
+      type: mode === "wrong" ? "間違い復習" : "練習",
+
+      date: new Date().toLocaleString("ja-JP"),
+
+      score: score,
+
+      total: session.length,
+
+      pct: pct
+
+    }
+
+  ]);
+
+  hideAll();
+
+  $("result").classList.remove("hide");
+
+  // 間違い復習
+
+  if(mode === "wrong"){
+
+    const remaining = getWrong().length;
+
+    $("resultText").innerHTML = `
+
+      <div class="stat">
+
+        <span>間違い復習</span>
+
+        <b>${score} / ${session.length}</b>
+
+      </div>
+
+      <div class="stat">
+
+        <span>正解率</span>
+
+        <b>${pct}%</b>
+
+      </div>
+
+      <div class="stat">
+
+        <span>残りの間違い問題</span>
+
+        <b>${remaining}問</b>
+
+      </div>
+
+      <p>
+
+        ${
+
+          remaining === 0
+
+          ? "🎉 間違い問題をすべてクリアしました！"
+
+          : "💪 残っている間違い問題をもう一度復習しよう！"
+
+        }
+
+      </p>
+
+    `;
+
+  }else{
+
+    // 通常練習
+
+    $("resultText").innerHTML = `
+
+      <div class="stat">
+
+        <span>正解</span>
+
+        <b>${score} / ${session.length}</b>
+
+      </div>
+
+      <div class="stat">
+
+        <span>正解率</span>
+
+        <b>${pct}%</b>
+
+      </div>
+
+      <p>
+
+        ${
+
+          pct >= 80
+
+          ? "🔥 かなり良い！"
+
+          : "💪 間違い復習でもう一周しよう！"
+
+        }
+
+      </p>
+
+    `;
+
+  }
+
+  refreshHome();
+
 }
+
+ 
 function finishMock(timeout){
  stopTimer();
  score=answers.reduce((n,a,i)=>n+(a===session[i].answer?1:0),0);
@@ -377,7 +505,24 @@ function finishMock(timeout){
  $("resultText").innerHTML=`<div class="stat"><span>模擬試験</span><b>${timeout?"⏰ 時間切れ":"完了"}</b></div><div class="stat"><span>正解</span><b>${score} / ${session.length}</b></div><div class="stat"><span>正解率</span><b>${pct}%</b></div><p>${pct>=80?"🔥 合格圏を狙える出来！":"💪 解説を確認して、もう一度挑戦しよう！"}</p><button class="primary" onclick="showReview()">📖 全問題の解説を見る</button>`;
  refreshHome();
 }
-function restart(){mode==="mock"?startMock():startQuiz(false)}
+function restart(){
+
+  if(mode==="mock"){
+
+    startMock();
+
+  }else if(mode==="wrong"){
+
+    startWrong();
+
+  }else{
+
+    startQuiz(false);
+
+  }
+
+}
+ 
 function showReview(){
  hideAll();$("review").classList.remove("hide");
  let html="";

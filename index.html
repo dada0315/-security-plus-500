@@ -330,7 +330,23 @@ function answer(choice){
  answered=true;
  const bs=[...$("options").children];
  bs.forEach((b,i)=>{b.disabled=true;if(i===q.answer)b.classList.add("correct");if(i===choice&&choice!==q.answer)b.classList.add("wrong")});
- if(choice===q.answer)score++;else saveWrong([...getWrong(),q.id]);
+ if(choice===q.answer){
+
+  score++;
+
+  // 正解した問題は「間違い復習」から削除
+
+  const wrong=getWrong().filter(id=>id!==q.id);
+
+  saveWrong(wrong);
+
+}else{
+
+  // 間違えた問題は「間違い復習」に保存
+
+  saveWrong([...getWrong(),q.id]);
+
+}
  $("explain").textContent=(choice===q.answer?"⭕ 正解！ ":"❌ 不正解。 ")+q.explanation;
  $("explain").classList.remove("hide");$("next").disabled=false;
  $("next").textContent=idx===session.length-1?"結果を見る ▶":"次の問題 ▶";

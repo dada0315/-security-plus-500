@@ -11,7 +11,9 @@ header,.panel{background:#fff;border:1px solid #dce3ef;border-radius:16px;paddin
 h1{font-size:1.45rem;margin:0 0 8px}h2{font-size:1.15rem;margin:0 0 12px}
 p{line-height:1.6}.muted{color:#5e6b80;font-size:.92rem}
 button{border:0;border-radius:10px;padding:12px 15px;font-size:1rem;font-weight:650;cursor:pointer;background:#175cd3;color:white}
-button.secondary{background:#e8eef8;color:#183153}button:disabled{opacity:.5}
+button.secondary{background:#e8eef8;color:#183153}button.back-menu{display:inline-block;margin-top:8px;background:#e8eef8;color:#183153;border:1px solid #cbd7e8}button:disabled{opacity:.5}
+.fixed-back{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));z-index:9999;width:calc(100% - 24px);box-shadow:0 4px 18px #0003;background:#183153;color:#fff;border:2px solid #fff}
+body{padding-bottom:90px}
 .hosts{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:8px}
 .host{background:#e8eef8;color:#183153;text-align:left}.host.active{outline:3px solid #175cd3;background:#d9e8ff}
 .log{background:#101827;color:#d6e2f0;padding:12px;border-radius:10px;white-space:pre-wrap;font-family:ui-monospace,monospace;font-size:.88rem;line-height:1.55;overflow-wrap:anywhere}
@@ -27,6 +29,7 @@ footer{color:#657187;font-size:.85rem;padding:4px}
 <h1>Security+ SY0-701 実技問題トレーニング</h1>
 <p>マルウェア検知ログを読み、各ホストの感染状況と感染元を判断する練習です。</p>
 <p class="muted">資料をもとにした学習用の練習問題です。公式試験問題そのものではありません。</p>
+<button type="button" class="back-menu" onclick="location.href='index.html'">← 通常メニューに戻る</button>
 </header>
 <section class="panel">
 <h2>問題1：マルウェアスキャンログの分析</h2>
@@ -62,6 +65,7 @@ footer{color:#657187;font-size:.85rem;padding:4px}
 <div class="notice">実際の運用では、端末をネットワークから隔離し、組織のインシデント対応手順に従ってください。</div>
 </section>
 <footer>Security+ SY0-701 学習用。結果はこのページ上で採点され、サーバーには送信されません。</footer>
+<button type="button" class="fixed-back" onclick="location.href='./index.html'">← 通常メニューに戻る</button>
 </div>
 <script>
 const data = [

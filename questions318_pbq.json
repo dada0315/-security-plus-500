@@ -1,54 +1,42 @@
 
 [
   {
-    "id": 816,
-    "sourceQuestion": 76,
-    "type": "pbq",
-    "question": "実技問題1：攻撃の特徴を判断し、適切な修復・予防策を対応させてください。",
+    "id": 76,
+    "question": "質問76：攻撃の説明に対応する攻撃の種類と、最適な予防・修復アクションを選択してください。",
     "instructions": [
-      "1. 複数の送信元からWebサーバーへ大量のSYNパケットを送信する攻撃：Botnet。対策はDDoS保護を有効にする。",
-      "2. 接続を確立してユーザー端末で遠隔コマンドを実行する攻撃：RAT。対策は不要なリモートアクセスサービスを無効にする。",
-      "3. 自己増殖し、既知の認証情報を使ってSQLデータベースを侵害する攻撃：資料の解答ではVirus。対策は脆弱なシステムにパッチを適用する。",
-      "4. ハードウェアを使って役員の入力を監視し、認証情報を盗む攻撃：Keylogger。対策はプッシュ通知を使う多要素認証を導入する。",
-      "5. 内製アプリに隠れたアクセス経路を埋め込み、ログインを回避する攻撃：Backdoor。対策はコードレビューを実施する。"
+      "Webサーバーに複数の送信元からSYNパケットを大量に送信する攻撃：Botnet → Enable DDoS protection（DDoS保護を有効にする）",
+      "リモートコマンドを実行できる接続を確立する攻撃：RAT → Disable remote access services（リモートアクセスサービスを無効にする）",
+      "自己増殖し、既知の認証情報を使ってSQLデータベースを侵害し、ネットワーク内を移動する攻撃：Virus → Patch vulnerable systems（脆弱なシステムにパッチを適用する）",
+      "ハードウェアを使って幹部の入力を遠隔監視し、認証情報を収集する攻撃：Keylogger → Implement 2FA using push notification（プッシュ通知による2要素認証を実装する）",
+      "内部開発アプリケーションに隠れたアクセスを埋め込み、アカウントログインを回避する攻撃：Backdoor → Conduct a code review（コードレビューを実施する）"
     ],
-    "answer": "1. Botnet — Enable DDoS protection\n2. RAT — Disable remote access services\n3. Virus — Patch vulnerable systems\n4. Keylogger — Implement 2FA using push notification\n5. Backdoor — Conduct a code review",
-    "note": "PDFの質問76の図と解答欄を確認して整理。選択式ではなく、対応付け形式の実技問題です。"
+    "answer": "Botnet → Enable DDoS protection\nRAT → Disable remote access services\nVirus → Patch vulnerable systems\nKeylogger → Implement 2FA using push notification\nBackdoor → Conduct a code review",
+    "note": "PDFの質問76の正解画面に基づく対応関係です。"
   },
   {
-    "id": 817,
-    "sourceQuestion": 77,
-    "type": "pbq",
-    "question": "実技問題2：各ホストのセキュリティログを調べ、感染の発生元と各ホストの感染状態を判断してください。",
+    "id": 77,
+    "question": "質問77：ネットワーク上の潜在的な感染を調査してください。ログを確認し、感染の原因となったホストと、各ホストが感染しているかどうかを特定してください。",
     "instructions": [
-      "ネットワーク内の各ホストのログを確認してください。",
-      "感染の発生元（Origin）を1台選んでください。",
-      "各ホストを Infected または Clean に分類してください。",
-      "192.168.10.22：Infected",
-      "192.168.10.37：Infected",
-      "192.168.10.41：Origin",
-      "10.10.9.12：Infected",
-      "10.10.9.18：Infected"
+      "感染元（Origin）：192.168.10.41",
+      "感染（Infected）：192.168.10.22",
+      "感染（Infected）：192.168.10.37",
+      "感染（Infected）：10.10.9.12",
+      "感染（Infected）：10.10.9.18"
     ],
-    "answer": "発生元：192.168.10.41\n感染：192.168.10.22、192.168.10.37、10.10.9.12、10.10.9.18\nクリーン：該当なし",
-    "note": "PDFの質問77のホストログと解答図を確認して整理しました。"
+    "answer": "192.168.10.41：Origin\n192.168.10.22：Infected\n192.168.10.37：Infected\n10.10.9.12：Infected\n10.10.9.18：Infected",
+    "note": "PDFの質問77の正解図に基づきます。感染元と感染ホストを区別してください。"
   },
   {
-    "id": 818,
-    "sourceQuestion": 310,
-    "type": "pbq",
-    "question": "実技問題3：2つの拠点間を接続するサイト間VPNを完成させてください。通信を暗号化し、2台のVPNコンセントレーターを共有秘密鍵で認証します。",
+    "id": 310,
+    "question": "質問310：2つの支店間のサイト間VPNを構成してください。最も安全なアルゴリズムを選択し、VPN経由の通信を暗号化し、2つのVPNコンセントレーターを認証してください。",
     "instructions": [
-      "VPNコンセントレーター1：Peer IP address は 5.5.5.20。",
-      "VPNコンセントレーター1 Phase 1：Auth method = PSK、Encryption algorithm = AES256、Hash algorithm = SHA256、DH key group = 14。",
-      "VPNコンセントレーター1 Phase 2：Protocol = ESP、Encryption algorithm = AES256、Hash algorithm = SHA256。",
-      "VPNコンセントレーター1：Local network/mask = 192.168.1.0/24、Remote network/mask = 192.168.2.0/24。",
-      "VPNコンセントレーター2：Peer IP address は 5.5.5.10。",
-      "VPNコンセントレーター2 Phase 1：Auth method = PSK、Encryption algorithm = AES256、Hash algorithm = SHA256、DH key group = 14。",
-      "VPNコンセントレーター2 Phase 2：Protocol = ESP、Encryption algorithm = AES256、Hash algorithm = SHA256。",
-      "VPNコンセントレーター2：Local network/mask = 192.168.2.0/24、Remote network/mask = 192.168.1.0/24。"
+      "VPN Concentrator 1：Phase 1のPeer IP addressは5.5.5.20、Auth methodはPKI、Encryption algorithmはAES256、Hash algorithmはSHA256、DH key groupは14。",
+      "VPN Concentrator 2：Phase 1のPeer IP addressは5.5.5.10、Auth methodはPKI、Encryption algorithmはAES256、Hash algorithmはSHA256、DH key groupは14。",
+      "両方のPhase 2：ModeはTunnel、ProtocolはESP、Encryption algorithmはAES256、Hash algorithmはSHA256。",
+      "VPN Concentrator 1：Local network/maskは192.168.1.0/24、Remote network/maskは192.168.2.0/24。",
+      "VPN Concentrator 2：Local network/maskは192.168.2.0/24、Remote network/maskは192.168.1.0/24。"
     ],
-    "answer": "両方のVPNコンセントレーターで、PSK認証、AES256暗号化、SHA256ハッシュ、DHグループ14を設定します。Phase 2はESP、AES256、SHA256を選びます。VPN1のPeer IPは5.5.5.20、VPN2のPeer IPは5.5.5.10です。各拠点のネットワークは192.168.1.0/24と192.168.2.0/24を相互に設定します。",
-    "note": "PDFの質問310の設定画面と正解図をもとに整理しました。"
+    "answer": "Concentrator 1：Peer IP 5.5.5.20、PKI、AES256、SHA256、DH group 14。Phase 2：Tunnel、ESP、AES256、SHA256、Local 192.168.1.0/24、Remote 192.168.2.0/24。\nConcentrator 2：Peer IP 5.5.5.10、PKI、AES256、SHA256、DH group 14。Phase 2：Tunnel、ESP、AES256、SHA256、Local 192.168.2.0/24、Remote 192.168.1.0/24。",
+    "note": "PDFの質問310の正解図に表示された設定値に基づきます。"
   }
 ]

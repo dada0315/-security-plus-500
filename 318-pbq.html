@@ -69,6 +69,22 @@ function render(){
   p.textContent='・'+t;
   $('instructions').appendChild(p);
  });
+$('problemImage').innerHTML='';
+const imageFiles = q.id===76 ? ['q76-033.jpg']
+ : q.id===77 ? ['q77-035.jpg','q77-036.jpg','q77-037.jpg','q77-038.jpg','q77-039.jpg']
+ : q.id===310 ? ['q310-137.jpg','q310-138.jpg','q310-139.jpg']
+ : [];
+imageFiles.forEach(src=>{
+ const img=document.createElement('img');
+ img.src=src;
+ img.alt='実技問題 '+q.id+' の参考画像';
+ img.style.width='100%';
+ img.style.height='auto';
+ img.style.margin='12px 0';
+ img.style.border='1px solid #ccc';
+ img.style.borderRadius='8px';
+ $('problemImage').appendChild(img);
+});
  $('response').value='';
  $('answerBox').classList.add('hidden');
  $('answerBox').textContent='';

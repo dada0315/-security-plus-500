@@ -2,38 +2,53 @@
 [
   {
     "id": 816,
+    "sourceQuestion": 76,
     "type": "pbq",
-    "question": "実技問題1：ネットワーク構成図を確認し、セキュリティ上の問題点と適切な対策を考えてください。",
+    "question": "実技問題1：攻撃の特徴を判断し、適切な修復・予防策を対応させてください。",
     "instructions": [
-      "ネットワーク内の機器と通信経路を確認する",
-      "問題となる設定や通信を特定する",
-      "適切なセキュリティ対策を記述する"
+      "1. 複数の送信元からWebサーバーへ大量のSYNパケットを送信する攻撃：Botnet。対策はDDoS保護を有効にする。",
+      "2. 接続を確立してユーザー端末で遠隔コマンドを実行する攻撃：RAT。対策は不要なリモートアクセスサービスを無効にする。",
+      "3. 自己増殖し、既知の認証情報を使ってSQLデータベースを侵害する攻撃：資料の解答ではVirus。対策は脆弱なシステムにパッチを適用する。",
+      "4. ハードウェアを使って役員の入力を監視し、認証情報を盗む攻撃：Keylogger。対策はプッシュ通知を使う多要素認証を導入する。",
+      "5. 内製アプリに隠れたアクセス経路を埋め込み、ログインを回避する攻撃：Backdoor。対策はコードレビューを実施する。"
     ],
-    "answer": "実際の構成と条件に応じて、不要な通信の制限、適切なアクセス制御、ネットワーク分離などを検討する。",
-    "note": "これは仮の練習問題です。元PDFの実技問題を転記したものではありません。"
+    "answer": "1. Botnet — Enable DDoS protection\n2. RAT — Disable remote access services\n3. Virus — Patch vulnerable systems\n4. Keylogger — Implement 2FA using push notification\n5. Backdoor — Conduct a code review",
+    "note": "PDFの質問76の図と解答欄を確認して整理。選択式ではなく、対応付け形式の実技問題です。"
   },
   {
     "id": 817,
+    "sourceQuestion": 77,
     "type": "pbq",
-    "question": "実技問題2：セキュリティログから不審なアクセスを調査してください。",
+    "question": "実技問題2：各ホストのセキュリティログを調べ、感染の発生元と各ホストの感染状態を判断してください。",
     "instructions": [
-      "ログの送信元と時刻を確認する",
-      "認証失敗や不審なアクセスのパターンを特定する",
-      "必要な調査と対応を記述する"
+      "ネットワーク内の各ホストのログを確認してください。",
+      "感染の発生元（Origin）を1台選んでください。",
+      "各ホストを Infected または Clean に分類してください。",
+      "192.168.10.22：Infected",
+      "192.168.10.37：Infected",
+      "192.168.10.41：Origin",
+      "10.10.9.12：Infected",
+      "10.10.9.18：Infected"
     ],
-    "answer": "ログを相関分析し、関連するアカウントや端末を調査する。不正アクセスが疑われる場合は、組織の手順に従って封じ込めと報告を行う。",
-    "note": "これは仮の練習問題です。元PDFの実技問題を転記したものではありません。"
+    "answer": "発生元：192.168.10.41\n感染：192.168.10.22、192.168.10.37、10.10.9.12、10.10.9.18\nクリーン：該当なし",
+    "note": "PDFの質問77のホストログと解答図を確認して整理しました。"
   },
   {
     "id": 818,
+    "sourceQuestion": 310,
     "type": "pbq",
-    "question": "実技問題3：組織のセキュリティ対策を改善してください。",
+    "question": "実技問題3：2つの拠点間を接続するサイト間VPNを完成させてください。通信を暗号化し、2台のVPNコンセントレーターを共有秘密鍵で認証します。",
     "instructions": [
-      "リスクと影響を整理する",
-      "優先すべき対策を選ぶ",
-      "対策の理由を説明する"
+      "VPNコンセントレーター1：Peer IP address は 5.5.5.20。",
+      "VPNコンセントレーター1 Phase 1：Auth method = PSK、Encryption algorithm = AES256、Hash algorithm = SHA256、DH key group = 14。",
+      "VPNコンセントレーター1 Phase 2：Protocol = ESP、Encryption algorithm = AES256、Hash algorithm = SHA256。",
+      "VPNコンセントレーター1：Local network/mask = 192.168.1.0/24、Remote network/mask = 192.168.2.0/24。",
+      "VPNコンセントレーター2：Peer IP address は 5.5.5.10。",
+      "VPNコンセントレーター2 Phase 1：Auth method = PSK、Encryption algorithm = AES256、Hash algorithm = SHA256、DH key group = 14。",
+      "VPNコンセントレーター2 Phase 2：Protocol = ESP、Encryption algorithm = AES256、Hash algorithm = SHA256。",
+      "VPNコンセントレーター2：Local network/mask = 192.168.2.0/24、Remote network/mask = 192.168.1.0/24。"
     ],
-    "answer": "リスクの大きさと発生可能性を評価し、優先順位を付けてアクセス制御、監視、パッチ適用などの適切な対策を実施する。",
-    "note": "これは仮の練習問題です。元PDFの実技問題を転記したものではありません。"
+    "answer": "両方のVPNコンセントレーターで、PSK認証、AES256暗号化、SHA256ハッシュ、DHグループ14を設定します。Phase 2はESP、AES256、SHA256を選びます。VPN1のPeer IPは5.5.5.20、VPN2のPeer IPは5.5.5.10です。各拠点のネットワークは192.168.1.0/24と192.168.2.0/24を相互に設定します。",
+    "note": "PDFの質問310の設定画面と正解図をもとに整理しました。"
   }
 ]

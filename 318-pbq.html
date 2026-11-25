@@ -70,9 +70,10 @@ function render(){
   $('instructions').appendChild(p);
  });
 $('problemImage').innerHTML='';
-const imageFiles = q.id===76 ? ['q76-033.jpg']
- : q.id===77 ? ['q77-035.jpg','q77-036.jpg','q77-037.jpg','q77-038.jpg','q77-039.jpg']
- : q.id===310 ? ['q310-137.jpg','q310-138.jpg','q310-139.jpg']
+
+const imageFiles = q.id===76 ? ['pbq76-page33.jpg']
+ : q.id===77 ? ['pbq77-page35.jpg','pbq77-page36.jpg','pbq77-page37.jpg','pbq77-page38.jpg','pbq77-page39.jpg']
+ : q.id===310 ? ['pbq310-page137.jpg','pbq310-page138.jpg','pbq310-page139.jpg']
  : [];
 imageFiles.forEach(src=>{
  const img=document.createElement('img');

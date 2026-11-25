@@ -1,0 +1,123 @@
+
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Security+ 追加318問</title>
+<style>
+body{margin:0;background:#f3f4f6;color:#111827;font-family:-apple-system,sans-serif;line-height:1.6}
+header{background:#111827;color:white;padding:18px}
+main{max-width:700px;margin:auto;padding:15px}
+.card{background:white;border-radius:12px;padding:16px;margin-bottom:14px}
+button{font-size:16px;padding:12px;margin:5px 0;border-radius:9px;cursor:pointer}
+.choice{display:block;width:100%;text-align:left;background:white;border:1px solid #aaa}
+.action{background:#2563eb;color:white;border:0}
+.secondary{background:#555;color:white;border:0}
+.correct{background:#dcfce7;border-color:#15803d}
+.wrong{background:#fee2e2;border-color:#b91c1c}
+.hidden{display:none}
+</style>
+</head>
+<body>
+<header>
+<h2>📚 Security+ 追加318問</h2>
+追加問題トレーニング
+</header>
+<main>
+<div class="card" id="loading">問題を読み込んでいます…</div>
+<div class="card hidden" id="quiz">
+<p id="progress"></p>
+<h3 id="question"></h3>
+<div id="choices"></div>
+<p id="feedback"></p>
+<button class="action" id="next" disabled>次の問題 ▶</button>
+<button class="secondary" id="quit">メニューに戻る</button>
+</div>
+<div class="card hidden" id="result">
+<h3>結果</h3>
+<p id="score"></p>
+<button class="action" id="restart">もう一度挑戦</button>
+<button class="secondary" onclick="location.href='index.html'">メニューに戻る</button>
+</div>
+</main>
+<script>
+let bank=[],order=[],pos=0,correct=0,answered=false;
+const $=id=>document.getElementById(id);
+function shuffle(a){
+ for(let i=a.length-1;i>0;i--){
+  const j=Math.floor(Math.random()*(i+1));
+  [a[i],a[j]]=[a[j],a[i]];
+ }
+ return a;
+}
+async function init(){
+ try{
+  const res=await fetch('questions318.json');
+  if(!res.ok)throw Error('questions318.json が見つかりません。');
+  const data=await res.json();
+  bank=data.filter(q=>Array.isArray(q.options)&&q.options.length>=2&&Number.isInteger(Number(q.answer)));
+  if(!bank.length)throw Error('問題データがありません。');
+  $('loading').classList.add('hidden');
+  $('quiz').classList.remove('hidden');
+  start();
+ }catch(e){
+  $('loading').textContent='問題データの読み込みに失敗しました。'+e.message+' GitHubに questions318.json があるか確認してください。';
+ }
+}
+function start(){
+ order=shuffle([...bank.keys()]);
+ pos=0;correct=0;
+ $('result').classList.add('hidden');
+ $('quiz').classList.remove('hidden');
+ render();
+}
+function render(){
+ answered=false;
+ const q=bank[order[pos]];
+ $('progress').textContent='問題 '+(pos+1)+' / '+order.length+'　正解 '+correct+' 問';
+ $('question').textContent=q.question||'問題文がありません';
+ $('choices').innerHTML='';
+ $('feedback').textContent='';
+ $('next').disabled=true;
+ $('next').textContent='次の問題 ▶';
+ q.options.forEach((opt,i)=>{
+  const b=document.createElement('button');
+  b.className='choice';
+  b.textContent=String.fromCharCode(65+i)+'. '+opt;
+  b.onclick=()=>choose(i);
+  $('choices').appendChild(b);
+ });
+}
+function choose(i){
+ if(answered)return;
+ answered=true;
+ const q=bank[order[pos]],ans=Number(q.answer);
+ [...$('choices').children].forEach((b,j)=>{
+  b.disabled=true;
+  if(j===ans)b.classList.add('correct');
+  if(j===i&&i!==ans)b.classList.add('wrong');
+ });
+ if(i===ans)correct++;
+ $('feedback').textContent=(i===ans?'正解！':'不正解。正解は '+String.fromCharCode(65+ans)+' です。')+(q.explanation?'\n'+q.explanation:'');
+ $('progress').textContent='問題 '+(pos+1)+' / '+order.length+'　正解 '+correct+' 問';
+ $('next').disabled=false;
+ $('next').textContent=pos===order.length-1?'結果を見る':'次の問題 ▶';
+}
+$('next').onclick=()=>{
+ if(!answered)return;
+ if(pos<order.length-1){pos++;render();}
+ else{
+  $('quiz').classList.add('hidden');
+  $('result').classList.remove('hidden');
+  $('score').textContent='全 '+order.length+' 問中、正解 '+correct+' 問（正答率 '+Math.round(correct/order.length*100)+'%）';
+ }
+};
+$('quit').onclick=()=>{
+ if(confirm('メニューに戻りますか？'))location.href='index.html';
+};
+$('restart').onclick=start;
+init();
+</script>
+</body>
+</html>

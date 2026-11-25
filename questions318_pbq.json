@@ -6,7 +6,7 @@
     "instructions": [
       "Webサーバーに複数の送信元からSYNパケットを大量に送信する攻撃：Botnet → Enable DDoS protection（DDoS保護を有効にする）",
       "リモートコマンドを実行できる接続を確立する攻撃：RAT → Disable remote access services（リモートアクセスサービスを無効にする）",
-      "自己増殖し、既知の認証情報を使ってSQLデータベースを侵害し、ネットワーク内を移動する攻撃：Virus → Patch vulnerable systems（脆弱なシステムにパッチを適用する）",
+     "自己増殖し、既知の認証情報を使ってSQLデータベースを侵害し、ネットワーク内を移動する攻撃：Worm → Change the default system password（既定のシステムパスワードを変更する）",
       "ハードウェアを使って幹部の入力を遠隔監視し、認証情報を収集する攻撃：Keylogger → Implement 2FA using push notification（プッシュ通知による2要素認証を実装する）",
       "内部開発アプリケーションに隠れたアクセスを埋め込み、アカウントログインを回避する攻撃：Backdoor → Conduct a code review（コードレビューを実施する）"
     ],

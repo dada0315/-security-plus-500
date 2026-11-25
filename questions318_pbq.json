@@ -10,7 +10,7 @@
       "ハードウェアを使って幹部の入力を遠隔監視し、認証情報を収集する攻撃：Keylogger → Implement 2FA using push notification（プッシュ通知による2要素認証を実装する）",
       "内部開発アプリケーションに隠れたアクセスを埋め込み、アカウントログインを回避する攻撃：Backdoor → Conduct a code review（コードレビューを実施する）"
     ],
-    "answer": "Botnet → Enable DDoS protection\nRAT → Disable remote access services\nVirus → Patch vulnerable systems\nKeylogger → Implement 2FA using push notification\nBackdoor → Conduct a code review",
+    "answer": "Botnet → Enable DDoS protection\nRAT → Disable remote access services\nWorm → Change the default system password\nKeylogger → Implement 2FA using push notification\nBackdoor → Conduct a code review",
     "note": "PDFの質問76の正解画面に基づく対応関係です。"
   },
   {

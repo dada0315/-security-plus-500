@@ -1,124 +1,198 @@
-
 <!doctype html>
 <html lang="ja">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Security+ 追加318問</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111827">
+<title>Security+ 追加318問トレーニング</title>
 <style>
-body{margin:0;background:#f3f4f6;color:#111827;font-family:-apple-system,sans-serif;line-height:1.6}
-header{background:#111827;color:white;padding:18px}
-main{max-width:700px;margin:auto;padding:15px}
-.card{background:white;border-radius:12px;padding:16px;margin-bottom:14px}
-button{font-size:16px;padding:12px;margin:5px 0;border-radius:9px;cursor:pointer}
-.choice{display:block;width:100%;text-align:left;background:white;border:1px solid #aaa}
-.action{background:#2563eb;color:white;border:0}
-.secondary{background:#555;color:white;border:0}
-.correct{background:#dcfce7;border-color:#15803d}
-.wrong{background:#fee2e2;border-color:#b91c1c}
-.hidden{display:none}
+:root{color-scheme:light;--bg:#f3f4f6;--card:#fff;--text:#111827;--muted:#6b7280;--line:#d1d5db;--blue:#2563eb;--green:#15803d;--red:#b91c1c}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.55}
+header{background:#111827;color:#fff;padding:18px 16px}header h1{font-size:1.25rem;margin:0 0 4px}header p{margin:0;color:#d1d5db;font-size:.9rem}
+main{max-width:850px;margin:0 auto;padding:14px}section,.panel{background:var(--card);border:1px solid #e5e7eb;border-radius:14px;padding:16px;margin:0 0 14px;box-shadow:0 1px 2px #00000008}
+label{display:block;font-weight:650;margin:10px 0 5px}select,button{font:inherit;border-radius:10px;padding:11px 12px}select{width:100%;border:1px solid var(--line);background:#fff;color:var(--text)}
+button{border:0;background:var(--blue);color:white;font-weight:650;cursor:pointer}button.secondary{background:#e5e7eb;color:#111827}button.danger{background:#991b1b}button:disabled{opacity:.45}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.actions button{flex:1 1 125px}
+.row{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}.muted{color:var(--muted);font-size:.9rem}
+.progress{height:8px;background:#e5e7eb;border-radius:99px;overflow:hidden;margin:12px 0}.progress>div{height:100%;width:0;background:var(--blue)}
+#question{font-size:1.08rem;font-weight:700;white-space:pre-wrap;margin:12px 0}
+.option{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:10px;padding:11px;margin:8px 0;background:#fff;font-weight:400}
+.option input{margin-top:5px;transform:scale(1.15)}.option span{white-space:pre-wrap}
+#feedback{padding:12px;border-radius:10px;margin-top:12px;white-space:pre-wrap}
+.good{background:#dcfce7;color:#14532d}.bad{background:#fee2e2;color:#7f1d1d}.info{background:#eff6ff;color:#1e3a8a}
+.hidden{display:none!important}.statgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.stat{padding:12px;border:1px solid #e5e7eb;border-radius:10px}.stat b{font-size:1.35rem;display:block}.stat span{font-size:.85rem;color:var(--muted)}
+@media(min-width:600px){.statgrid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+small{color:var(--muted)}details summary{cursor:pointer;font-weight:650}
 </style>
 </head>
 <body>
-<header>
- <button class="action" onclick="location.href='318-pbq.html'">🧩 実技問題3問</button>
-<h2>📚 Security+ 追加318問</h2>
-追加問題トレーニング
-</header>
+<header><h1>Security+ 追加318問トレーニング</h1><p>問題演習・間違い復習・成績確認</p></header>
 <main>
-<div class="card" id="loading">問題を読み込んでいます…</div>
-<div class="card hidden" id="quiz">
-<p id="progress"></p>
-<h3 id="question"></h3>
-<div id="choices"></div>
-<p id="feedback"></p>
-<button class="action" id="next" disabled>次の問題 ▶</button>
-<button class="secondary" id="quit">メニューに戻る</button>
-</div>
-<div class="card hidden" id="result">
-<h3>結果</h3>
-<p id="score"></p>
-<button class="action" id="restart">もう一度挑戦</button>
-<button class="secondary" onclick="location.href='index.html'">メニューに戻る</button>
-</div>
+<section id="setup">
+  <div class="row"><strong>演習設定</strong><span id="loadStatus" class="muted">問題データを読み込み中…</span></div>
+  <label for="mode">出題モード</label>
+  <select id="mode"><option value="all">全問題から出題</option><option value="wrong">間違えた問題だけ</option><option value="unanswered">未回答の問題</option><option value="domain">分野別に出題</option></select>
+  <label for="domain">分野</label><select id="domain"><option value="all">すべての分野</option></select>
+  <label for="count">問題数</label>
+  <select id="count"><option value="10">10問</option><option value="25">25問</option><option value="50">50問</option><option value="100">100問</option><option value="all">全問</option></select>
+  <label for="order">出題順</label>
+  <select id="order"><option value="random">ランダム</option><option value="source">元の順番</option></select>
+  <div class="actions"><button id="startBtn">演習を開始</button><button id="statsBtn" class="secondary">成績を見る</button><button id="resetBtn" class="danger">成績をリセット</button></div>
+  <p class="muted">※成績・間違い記録は、この端末のブラウザーに保存されます。</p>
+</section>
+<section id="quiz" class="hidden">
+  <div class="row"><strong id="counter">問題 1 / 1</strong><span id="scoreLive" class="muted">正解 0</span></div>
+  <div class="progress"><div id="progressBar"></div></div>
+  <div id="domainTag" class="muted"></div>
+  <div id="question"></div>
+  <div id="multiHint" class="muted hidden">この問題は複数選択です。正しい選択肢をすべて選んでください。</div>
+  <div id="options"></div>
+  <div class="actions"><button id="checkBtn">回答を確認</button><button id="nextBtn" class="secondary hidden">次の問題</button><button id="endBtn" class="secondary">演習を終了</button></div>
+  <div id="feedback" class="hidden"></div>
+  <details id="explanationDetails" class="hidden" style="margin-top:12px"><summary>解説</summary><p id="explanation"></p></details>
+</section>
+<section id="result" class="hidden">
+  <h2>演習結果</h2><div class="statgrid" id="resultStats"></div>
+  <p id="resultText"></p><div class="actions"><button id="againBtn">もう一度設定する</button></div>
+</section>
+<section id="stats" class="hidden">
+  <h2>累積成績</h2><div class="statgrid" id="statsGrid"></div>
+  <p id="statsText"></p><details><summary>分野別の成績</summary><div id="domainStats"></div></details>
+  <div class="actions"><button id="closeStatsBtn" class="secondary">閉じる</button></div>
+</section>
 </main>
 <script>
-let bank=[],order=[],pos=0,correct=0,answered=false;
-const $=id=>document.getElementById(id);
-function shuffle(a){
- for(let i=a.length-1;i>0;i--){
-  const j=Math.floor(Math.random()*(i+1));
-  [a[i],a[j]]=[a[j],a[i]];
- }
- return a;
+(() => {
+'use strict';
+const $ = id => document.getElementById(id);
+const STORE = 'secplus318_stats_v2';
+const WRONG = 'secplus318_wrong_v2';
+let questions = [], session = [], pos = 0, correctThisRun = 0, answeredThisRun = 0, currentChecked = false;
+let stats = loadObj(STORE, {}), wrong = new Set(loadObj(WRONG, []));
+function loadObj(key, fallback){try{const v=JSON.parse(localStorage.getItem(key)||'null');return v==null?fallback:v}catch(e){return fallback}}
+function save(){try{localStorage.setItem(STORE,JSON.stringify(stats));localStorage.setItem(WRONG,JSON.stringify([...wrong]))}catch(e){}}
+function normalizeDomain(q){
+  const d=String(q.domain||'').trim();
+  if(d && d!=='全分野') return d;
+  const t=String(q.question||'').toLowerCase()+' '+(Array.isArray(q.options)?q.options.join(' '):'');
+  const rules=[
+    ['脅威・脆弱性・緩和策',/phishing|フィッシング|ransomware|ランサム|malware|マルウェア|threat actor|脅威アクター|vulnerability|脆弱性|exploit|攻撃者|攻撃|social engineering|ソーシャルエンジニアリング|virus|worm|トロイの木馬/],
+    ['セキュリティ運用',/log|ログ|incident|インシデント|siem|soc\b|監視|バックアップ|backup|復旧|recovery|patch|パッチ|vulnerability scan|脆弱性スキャン|forensic|フォレンジック|endpoint|エンドポイント|edr|xdr|firewall|ファイアウォール|防御|検知|検出|response|対応/],
+    ['セキュリティアーキテクチャ',/network|ネットワーク|subnet|サブネット|vpn|暗号|encryption|cipher|暗号化|pki|certificate|証明書|cloud|クラウド|zero trust|ゼロトラスト|architecture|アーキテクチャ|segmentation|セグメンテーション|wireless|無線|protocol|プロトコル|dns|dhcp|routing|ルーティング/],
+    ['セキュリティプログラム管理',/policy|ポリシー|governance|ガバナンス|compliance|コンプライアンス|risk|リスク|audit|監査|privacy|プライバシー|training|教育|awareness|意識向上|vendor|サプライヤー|third.party|第三者|business continuity|事業継続|disaster recovery|災害復旧|法律|規制|管理策/],
+    ['一般セキュリティ概念',/least privilege|最小権限|authentication|認証|authorization|認可|mfa|多要素|access control|アクセス制御|identity|アイデンティティ|confidentiality|機密性|integrity|完全性|availability|可用性|nonrepudiation|否認防止|hash|ハッシュ|digital signature|デジタル署名|control type|制御タイプ/]
+  ];
+  for(const [name,re] of rules) if(re.test(t)) return name;
+  return '一般セキュリティ概念';
 }
-async function init(){
+function domainOf(q){return normalizeDomain(q)}
+function correctIndices(q){
+  if(Array.isArray(q.answerIndices)) return q.answerIndices.map(Number).sort((a,b)=>a-b);
+  if(typeof q.answer==='number') return [q.answer];
+  if(typeof q.answer==='string' && /^[A-Z](,[A-Z])*$/.test(q.answer.trim())) return q.answer.split(',').map(x=>x.charCodeAt(0)-65).sort((a,b)=>a-b);
+  return [];
+}
+function isMulti(q){return q.multiSelect===true || (Array.isArray(q.answerIndices)&&q.answerIndices.length>1)}
+function correctLabel(q){return correctIndices(q).map(i=>String.fromCharCode(65+i)).join(', ')}
+function explanationFor(q){
+ const ex=String(q.explanation||'').trim();
+ if(ex && !/^資料記載の正解[:：]/.test(ex)) return ex;
+ const answer=correctIndices(q), opts=Array.isArray(q.options)?q.options:[];
+ const correctText=answer.map(i=>opts[i]||String.fromCharCode(65+i)).join(' / ');
+ return '正解：'+correctLabel(q)+'\n'+(correctText?'正解の選択肢：'+correctText+'\n':'')+
+ '補足：この問題データには、選択肢ごとの詳しい解説がまだ入っていません。正解の理由と他の選択肢が誤りである理由を、原資料に照らして順次整備する必要があります。';
+}
+async function loadQuestions(){
  try{
-  const res=await fetch('questions318.json');
-  if(!res.ok)throw Error('questions318.json が見つかりません。');
+  const res=await fetch('questions318.json?v='+Date.now(),{cache:'no-store'});
+  if(!res.ok) throw new Error('HTTP '+res.status);
   const data=await res.json();
-  bank=data.filter(q=>Array.isArray(q.options)&&q.options.length>=2&&Number.isInteger(Number(q.answer)));
-  if(!bank.length)throw Error('問題データがありません。');
-  $('loading').classList.add('hidden');
-  $('quiz').classList.remove('hidden');
-  start();
- }catch(e){
-  $('loading').textContent='問題データの読み込みに失敗しました。'+e.message+' GitHubに questions318.json があるか確認してください。';
- }
+  questions=Array.isArray(data)?data:(Array.isArray(data.questions)?data.questions:[]);
+  if(!questions.length) throw new Error('JSONに問題データがありません');
+  questions=questions.map((q,i)=>({...q,_key:String(q.id??q.sourceQuestion??i),_domain:domainOf(q)}));
+  const domains=[...new Set(questions.map(q=>q._domain))].sort();
+  $('domain').innerHTML='<option value="all">すべての分野</option>'+domains.map(d=>'<option></option>').join('');
+  [...$('domain').options].slice(1).forEach((o,i)=>{o.value=domains[i];o.textContent=domains[i]});
+  $('loadStatus').textContent=questions.length+'問を読み込みました';
+  $('startBtn').disabled=false;
+ }catch(e){$('loadStatus').textContent='読み込み失敗：'+e.message;$('startBtn').disabled=true}
 }
-function start(){
- order=shuffle([...bank.keys()]);
- pos=0;correct=0;
- $('result').classList.add('hidden');
- $('quiz').classList.remove('hidden');
- render();
+function begin(){
+ let pool=[...questions], mode=$('mode').value, dom=$('domain').value;
+ if(mode==='wrong') pool=pool.filter(q=>wrong.has(q._key));
+ if(mode==='unanswered') pool=pool.filter(q=>!stats[q._key]||!stats[q._key].seen);
+ if(mode==='domain' || dom!=='all') if(dom!=='all') pool=pool.filter(q=>q._domain===dom);
+ if(!pool.length){alert(mode==='wrong'?'間違えた問題はありません。':'条件に合う問題がありません。');return}
+ if($('order').value==='random') pool.sort(()=>Math.random()-.5);
+ const n=$('count').value==='all'?pool.length:Number($('count').value);
+ session=pool.slice(0,n);pos=0;correctThisRun=0;answeredThisRun=0;
+ $('setup').classList.add('hidden');$('result').classList.add('hidden');$('stats').classList.add('hidden');$('quiz').classList.remove('hidden');
+ renderQuestion();
 }
-function render(){
- answered=false;
- const q=bank[order[pos]];
- $('progress').textContent='問題 '+(pos+1)+' / '+order.length+'　正解 '+correct+' 問';
- $('question').textContent=q.question||'問題文がありません';
- $('choices').innerHTML='';
- $('feedback').textContent='';
- $('next').disabled=true;
- $('next').textContent='次の問題 ▶';
- q.options.forEach((opt,i)=>{
-  const b=document.createElement('button');
-  b.className='choice';
-  b.textContent=String.fromCharCode(65+i)+'. '+opt;
-  b.onclick=()=>choose(i);
-  $('choices').appendChild(b);
+function renderQuestion(){
+ const q=session[pos];currentChecked=false;
+ $('counter').textContent=`問題 ${pos+1} / ${session.length}`;
+ $('scoreLive').textContent=`正解 ${correctThisRun} / 回答 ${answeredThisRun}`;
+ $('progressBar').style.width=(pos/session.length*100)+'%';
+ $('domainTag').textContent='分野：'+q._domain+(q.difficulty?'　難易度：'+q.difficulty:'');
+ $('question').textContent=q.question||'（問題文なし）';
+ $('multiHint').classList.toggle('hidden',!isMulti(q));
+ $('options').innerHTML='';
+ (q.options||[]).forEach((opt,i)=>{
+  const label=document.createElement('label');label.className='option';
+  const input=document.createElement('input');input.type=isMulti(q)?'checkbox':'radio';input.name='answer';input.value=String(i);
+  const span=document.createElement('span');span.textContent=String.fromCharCode(65+i)+'. '+opt;
+  label.append(input,span);$('options').append(label);
  });
+ $('feedback').className='hidden';$('feedback').textContent='';
+ $('explanationDetails').classList.add('hidden');$('nextBtn').classList.add('hidden');$('checkBtn').classList.remove('hidden');
+ $('checkBtn').disabled=false;
 }
-function choose(i){
- if(answered)return;
- answered=true;
- const q=bank[order[pos]],ans=Number(q.answer);
- [...$('choices').children].forEach((b,j)=>{
-  b.disabled=true;
-  if(j===ans)b.classList.add('correct');
-  if(j===i&&i!==ans)b.classList.add('wrong');
- });
- if(i===ans)correct++;
- $('feedback').textContent=(i===ans?'正解！':'不正解。正解は '+String.fromCharCode(65+ans)+' です。')+(q.explanation?'\n'+q.explanation:'');
- $('progress').textContent='問題 '+(pos+1)+' / '+order.length+'　正解 '+correct+' 問';
- $('next').disabled=false;
- $('next').textContent=pos===order.length-1?'結果を見る':'次の問題 ▶';
+function checkAnswer(){
+ if(currentChecked)return;
+ const q=session[pos], selected=[...document.querySelectorAll('#options input:checked')].map(el=>Number(el.value)).sort((a,b)=>a-b);
+ if(!selected.length){alert('選択肢を選んでね。');return}
+ const expected=correctIndices(q);
+ const isCorrect=selected.length===expected.length&&selected.every((v,i)=>v===expected[i]);
+ currentChecked=true;answeredThisRun++;if(isCorrect)correctThisRun++;
+ const s=stats[q._key]||{seen:0,correct:0,wrong:0};s.seen++;if(isCorrect){s.correct++;wrong.delete(q._key)}else{s.wrong++;wrong.add(q._key)}stats[q._key]=s;save();
+ document.querySelectorAll('#options input').forEach(el=>el.disabled=true);
+ $('feedback').className=isCorrect?'good':'bad';
+ $('feedback').textContent=(isCorrect?'正解！':'不正解。')+'\nあなたの回答：'+selected.map(i=>String.fromCharCode(65+i)).join(', ')+'\n正解：'+correctLabel(q);
+ $('explanation').textContent=explanationFor(q);$('explanationDetails').classList.remove('hidden');
+ $('checkBtn').classList.add('hidden');$('nextBtn').classList.remove('hidden');
+ $('nextBtn').textContent=pos===session.length-1?'結果を見る':'次の問題';
+ $('scoreLive').textContent=`正解 ${correctThisRun} / 回答 ${answeredThisRun}`;
 }
-$('next').onclick=()=>{
- if(!answered)return;
- if(pos<order.length-1){pos++;render();}
- else{
-  $('quiz').classList.add('hidden');
-  $('result').classList.remove('hidden');
-  $('score').textContent='全 '+order.length+' 問中、正解 '+correct+' 問（正答率 '+Math.round(correct/order.length*100)+'%）';
- }
-};
-$('quit').onclick=()=>{
- if(confirm('メニューに戻りますか？'))location.href='index.html';
-};
-$('restart').onclick=start;
-init();
+function next(){
+ if(pos<session.length-1){pos++;renderQuestion()}else finish();
+}
+function finish(){
+ $('quiz').classList.add('hidden');$('result').classList.remove('hidden');$('setup').classList.remove('hidden');
+ const pct=answeredThisRun?Math.round(correctThisRun/answeredThisRun*100):0;
+ $('resultStats').innerHTML=`<div class="stat"><b>${answeredThisRun}</b><span>回答数</span></div><div class="stat"><b>${correctThisRun}</b><span>正解数</span></div><div class="stat"><b>${pct}%</b><span>正答率</span></div><div class="stat"><b>${wrong.size}</b><span>復習対象</span></div>`;
+ $('resultText').textContent=`今回の正答率は ${pct}% でした。間違えた問題は「間違えた問題だけ」モードで復習できます。`;
+}
+function showStats(){
+ $('setup').classList.add('hidden');$('quiz').classList.add('hidden');$('result').classList.add('hidden');$('stats').classList.remove('hidden');
+ const entries=Object.values(stats),seen=entries.reduce((n,s)=>n+(s.seen||0),0),right=entries.reduce((n,s)=>n+(s.correct||0),0);
+ const pct=seen?Math.round(right/seen*100):0;
+ $('statsGrid').innerHTML=`<div class="stat"><b>${questions.length}</b><span>登録問題数</span></div><div class="stat"><b>${seen}</b><span>累積回答数</span></div><div class="stat"><b>${pct}%</b><span>累積正答率</span></div><div class="stat"><b>${wrong.size}</b><span>間違い復習</span></div>`;
+ $('statsText').textContent='成績は問題ごとの回答回数を合算しています。';
+ const by={};for(const q of questions){const s=stats[q._key];if(!by[q._domain])by[q._domain]={seen:0,correct:0,total:0};by[q._domain].total++;if(s){by[q._domain].seen+=s.seen||0;by[q._domain].correct+=s.correct||0}}
+ $('domainStats').innerHTML=Object.entries(by).map(([d,s])=>`<p><b>${escapeHtml(d)}</b>：登録 ${s.total}問／回答 ${s.seen}回／正答率 ${s.seen?Math.round(s.correct/s.seen*100):0}%</p>`).join('');
+}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+$('startBtn').addEventListener('click',begin);$('checkBtn').addEventListener('click',checkAnswer);$('nextBtn').addEventListener('click',next);
+$('endBtn').addEventListener('click',()=>{if(confirm('ここまでの回答を結果にしますか？'))finish()});
+$('statsBtn').addEventListener('click',showStats);$('closeStatsBtn').addEventListener('click',()=>{$('stats').classList.add('hidden');$('setup').classList.remove('hidden')});
+$('againBtn').addEventListener('click',()=>{$('result').classList.add('hidden');$('setup').classList.remove('hidden')});
+$('resetBtn').addEventListener('click',()=>{if(confirm('この端末に保存された成績と間違い記録をすべて消しますか？')){stats={};wrong=new Set();save();alert('成績をリセットしました。')}});
+$('mode').addEventListener('change',()=>{$('domain').disabled=$('mode').value!=='domain'});
+$('domain').disabled=true;
+loadQuestions();
+})();
 </script>
 </body>
 </html>
